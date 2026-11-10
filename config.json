@@ -1,10 +1,30 @@
 {
   "postal_code": "52168",
   "stores": [
-    {"name":"Liverpool","url":"https://www.liverpool.com.mx/tienda/pdp/consola-port-til-rog-xbox-ally-x20-multiplataforma-1-tb-alone-rc74xa-tw009w/1210545022","kind":"product"},
-    {"name":"Amazon","url":"https://www.amazon.com.mx/dp/B0HJ6N5D4X","kind":"product"},
-    {"name":"ASUS","url":"https://www.asus.com/mx/store/mobile-handhelds/","kind":"search"},
-    {"name":"Coppel","url":"https://www.coppel.com/search?text=RC74XA","kind":"search"},
-    {"name":"Palacio de Hierro","url":"https://www.elpalaciodehierro.com/buscar?q=RC74XA","kind":"search"}
+    {
+      "name": "Liverpool",
+      "url": "https://www.liverpool.com.mx/tienda/pdp/consola-port-til-rog-xbox-ally-x20-multiplataforma-1-tb-alone-rc74xa-tw009w/1210545022",
+      "kind": "product"
+    },
+    {
+      "name": "Amazon",
+      "url": "https://www.amazon.com.mx/dp/B0HJ6N5D4X",
+      "kind": "product"
+    },
+    {
+      "name": "ASUS",
+      "url": "https://shop.asus.com/mx/rog/rog-xbox-ally-x20.html",
+      "kind": "product"
+    },
+    {
+      "name": "Coppel",
+      "url": "https://www.coppel.com/pdp/consola-portatil-asus-rog-xbox-ally-x20-1-tb-pm-2532043",
+      "kind": "product"
+    },
+    {
+      "name": "Palacio de Hierro",
+      "url": "https://www.elpalaciodehierro.com/asus-consola-rog-xbox-ally-x20-1-tb-45809220.html",
+      "kind": "product"
+    }
   ]
 }
