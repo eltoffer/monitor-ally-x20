@@ -1,0 +1,47 @@
+name: Monitor Ally X20
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: monitor-ally
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: python -m playwright install --with-deps chromium
+      - name: Restore previous state
+        run: |
+          git fetch origin monitor-state || true
+          git show origin/monitor-state:state.json > state.json.tmp && mv state.json.tmp state.json || rm -f state.json.tmp
+      - name: Check stores and notify
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python monitor.py
+      - name: Save state
+        run: |
+          cp state.json /tmp/ally-state.json
+          cp report.json /tmp/ally-report.json
+          git checkout --orphan next-state
+          git rm -rf .
+          cp /tmp/ally-state.json state.json
+          cp /tmp/ally-report.json report.json
+          git add -f state.json report.json
+          git -c user.name='ally-monitor' -c user.email='ally-monitor@users.noreply.github.com' commit -m 'Save monitoring state'
+          git push origin HEAD:monitor-state --force
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: report
+          path: report.json
+          retention-days: 7
