@@ -3,6 +3,11 @@ on:
   schedule:
     - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
+  push:
+    paths:
+      - monitor.py
+      - http_checks.py
+      - config.json
 permissions:
   contents: write
 concurrency:
@@ -11,14 +16,14 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install -r requirements.txt
-      - run: python -m playwright install --only-shell chromium
+      - name: Validate stock detection
+        run: python -m unittest discover -p 'test_*.py'
       - name: Restore previous state
         run: |
           git fetch origin monitor-state || true
@@ -26,7 +31,7 @@ jobs:
       - name: Check stores and notify
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_TEST: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+          TELEGRAM_TEST: ${{ github.event_name != 'schedule' && '1' || '0' }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python monitor.py
       - name: Save state

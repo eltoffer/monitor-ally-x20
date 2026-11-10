@@ -1,1 +1,1 @@
-playwright==1.56.0
+# Solo biblioteca estándar de Python 3.12; no requiere paquetes externos.

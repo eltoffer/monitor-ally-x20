@@ -1,26 +1,30 @@
 # Monitor ROG Xbox Ally X20
 
-Base preparada para RC74XA-TW009W y código postal 52168. Configurada en el repositorio eltoffer/monitor-ally-x20; conexión de Telegram comprobada. Validación local: Amazon agotado y Coppel disponible por $26,999; Liverpool, ASUS y Palacio devuelven HTTP 403. La cobertura de esas tres tiendas sigue pendiente. No confirma envío al código postal: este se incluye en el aviso para comprobarlo al comprar.
+Producto: RC74XA-TW009W. CP de referencia: 52168. Repositorio: https://github.com/eltoffer/monitor-ally-x20 . Avisos de Telegram conectados mediante secretos de GitHub.
 
-## Activación
+## Funcionamiento
 
-1. En Telegram abre https://t.me/BotFather (cuenta oficial), envía `/newbot` y sigue sus instrucciones. Guarda el token en privado.
-2. Abre tu nuevo bot y envíale `/start`.
-3. Obtén tu chat ID consultando `getUpdates` de la API oficial de Telegram desde tu equipo. No compartas el token ni capturas de él. Documentación: https://core.telegram.org/bots/api#getupdates . El identificador está en `result[].message.chat.id`.
-4. Crea en GitHub un repositorio dedicado y sube todos los archivos de esta carpeta, incluida `.github/workflows/monitor.yml`. La programación está configurada cada 15 minutos aproximadamente.
-5. En Settings → Secrets and variables → Actions crea `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` con sus valores.
-6. En Actions ejecuta “Monitor Ally X20” con Run workflow. Revisa el informe descargable y los avisos de Telegram. Esta primera ejecución es necesaria para validar las tiendas; si una devuelve “unknown”, necesita ajustes antes de considerarla cubierta.
+Cada 15 minutos aproximadamente, GitHub ejecuta consultas HTTP públicas en paralelo, sin abrir un navegador ni instalar paquetes. Solo se utiliza Python 3.12. Los avisos se envían al cambiar el estado y no se repiten mientras siga igual. Las ejecuciones manuales o cambios de código también envían un resumen de diagnóstico.
 
-Los ejecutores estándar de GitHub Actions son gratuitos en repositorios públicos. En privados hay una cuota: no activar gastos y revisar el consumo; con navegador, 96 ejecuciones diarias pueden superar la cuota gratuita. En públicos, GitHub puede desactivar las programaciones después de 60 días sin actividad; revisar y reactivar si ocurre. La programación puede retrasarse.
+- ASUS y Coppel: oferta estructurada de la ficha que coincide con el producto.
+- Amazon: título del producto y caja principal de compra. Se ignoran las recomendaciones.
+- Palacio de Hierro: consulta pública Product-Variation enlazada por la propia ficha. Se comprueban ID, modelo, disponibilidad y posibilidad de ordenar.
+- Liverpool: ficha exacta. Si devuelve 404, se consulta la búsqueda del modelo exacto para localizar una ficha nueva. Si la búsqueda responde que no existe, el estado es `unlisted`; esto no confirma que todas sus sucursales carezcan de inventario.
 
-## Qué detecta
+Estados: `available` (posible disponibilidad), `out_of_stock` (agotado explícito), `unlisted` (ficha no encontrada y búsqueda sin resultados), `unknown` (no se pudo comprobar). Un bloqueo nunca se considera agotado.
 
-Se examinan fichas individuales verificadas de las cinco tiendas. Amazon tiene además una lectura específica de su caja de compra y su título principal. No se eluden CAPTCHA ni bloqueos.
+La entrega al CP 52168 y el vendedor se verifican al comprar. El precio publicado no garantiza el total con envío. Las existencias pueden cambiar entre revisiones. No se garantiza el acceso permanente ni que la búsqueda descubra todas las publicaciones nuevas.
 
-Los datos estructurados de un Product coincidente con una oferta InStock, LimitedAvailability o PreOrder producen un aviso de posible disponibilidad. Amazon también permite detectar stock por la caja de compra, con título coincidente y evidencia de disponibilidad. No se usa el botón “comprar” como única evidencia. Agotado requiere evidencia explícita; lo demás se marca desconocido. La búsqueda no garantiza descubrir todos los productos nuevos. El precio no incluye necesariamente envío. El vendedor y la cobertura postal se confirman manualmente.
+## Operación
 
-Los avisos se envían al cambiar el estado, incluida la primera detección de un problema. El estado se guarda en una rama dedicada `monitor-state`; no uses esa rama para otros archivos, se reemplaza en cada ejecución. Los errores de ejecución se consultan en Actions. Un estado unknown persistente no repite avisos. Si falla todo el flujo, Telegram no necesariamente recibe aviso.
+Los secretos `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID` se guardan en Settings → Secrets and variables → Actions. No deben aparecer en archivos ni en mensajes públicos. El estado anterior y el último informe se guardan en la rama dedicada `monitor-state`, que el programa reemplaza en cada ejecución; no guardar otros archivos en ella.
 
-## Estado de entrega
+Consultar Actions → Monitor Ally X20 para ver las pruebas y el informe de cada ejecución. La programación de GitHub puede retrasarse y desactivarse tras 60 días de inactividad. El uso de ejecutores estándar en repositorios públicos es gratuito según los límites de GitHub. No se han contratado servicios ni activado gastos.
 
-Sintaxis y seis pruebas verificadas, incluida la ficha real de Amazon para evitar confusión con recomendaciones. Primera ejecución real y entrega de Telegram comprobadas. Pendiente: completar cobertura de Liverpool, ASUS y Palacio, bloqueadas con HTTP 403. La prueba manual envía un resumen; las ejecuciones periódicas avisan de cambios.
+Para probar localmente sin enviar avisos: `python3 monitor.py --dry-run`. Para verificar el detector: `python3 -m unittest discover -p 'test_*.py'`. La prueba local actualiza `state.json`; ese archivo está excluido de Git.
+
+## Evidencia y límites
+
+Ocho pruebas automatizadas incluyen: accesorios y ediciones distintas, recomendaciones de Amazon con stock, botón de compra sin evidencia de disponibilidad, señales contradictorias de Palacio, bloqueos y fichas retiradas de Liverpool. Las pruebas reales locales del nuevo método verificaron las cinco consultas en unos segundos: Coppel disponible, Amazon/ASUS/Palacio agotados y Liverpool sin ficha ni resultados del modelo. Consultar el último informe en GitHub para el estado más reciente.
+
+Documentación: https://docs.python.org/3.12/library/urllib.request.html , https://schema.org/availability , https://core.telegram.org/bots/api , https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows .
