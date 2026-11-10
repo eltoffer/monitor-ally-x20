@@ -50,6 +50,23 @@ async def inspect(page, url):
     body = await page.locator('body').inner_text()
     if re.search(r'captcha|verify you are human|access denied|robot check', body, re.I):
         return {'status': 'unknown', 'reason': 'Bloqueo o CAPTCHA'}
+    # Amazon's buy box exposes stock without Product JSON-LD. Scope to the
+    # main title and buy box; recommendations elsewhere can have other stock.
+    if 'amazon.com.mx' in url:
+        title = page.locator('#productTitle')
+        if await title.count() and target(await title.inner_text()):
+            box = page.locator('#outOfStock')
+            if await box.count() and await box.first.is_visible():
+                stock_text = await box.first.inner_text()
+                if re.search(r'agotado|no disponible', stock_text, re.I):
+                    return {'status': 'out_of_stock', 'price': '', 'reason': 'Amazon: ficha coincidente y caja de compra agotada'}
+            stock = page.locator('#availability')
+            buy = page.locator('#add-to-cart-button')
+            if await stock.count() and await buy.count() and await buy.first.is_visible() and await buy.first.is_enabled():
+                stock_text = await stock.first.inner_text()
+                if re.search(r'en stock|disponible|disponibles', stock_text, re.I) and not re.search(r'no disponible|agotado', stock_text, re.I):
+                    price = page.locator('#corePrice_feature_div .a-offscreen')
+                    return {'status': 'available', 'price': await price.first.inner_text() if await price.count() else 'sin dato', 'reason': 'Amazon: disponibilidad y botón de compra activos'}
     documents = []
     for raw in await page.locator('script[type="application/ld+json"]').all_text_contents():
         try:
@@ -121,6 +138,9 @@ async def main():
     state_path.write_text(json.dumps(current, indent=2))
     (ROOT / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2))
     print(json.dumps(report, ensure_ascii=False, indent=2))
+    if os.getenv('TELEGRAM_TEST') == '1':
+        labels = {'available': 'posible disponibilidad', 'out_of_stock': 'agotado', 'unknown': 'no se pudo comprobar'}
+        notify('Resultado de la prueba del monitor:\n' + '\n'.join(r['store'] + ': ' + labels[r['status']] for r in report) + '\nLas consultas desconocidas aún no proporcionan cobertura de inventario.')
 
 if __name__ == '__main__':
     asyncio.run(main())
