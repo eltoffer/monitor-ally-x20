@@ -16,7 +16,7 @@ jobs:
           import json
           import os
           import urllib.request
-          token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+          token = os.environ.get('TELEGRAM_BOT_TOKEN', '').strip()
           if not token:
               raise SystemExit('Falta guardar TELEGRAM_BOT_TOKEN en los secretos.')
           try:
@@ -26,14 +26,23 @@ jobs:
                   data = json.load(response)
           except Exception:
               raise SystemExit('No se pudo consultar Telegram. Comprueba el token guardado.') from None
+          try:
+              with urllib.request.urlopen('https://api.telegram.org/bot' + token + '/getMe', timeout=30) as response:
+                  bot = json.load(response).get('result', {})
+              username = bot.get('username', 'desconocido')
+              print('Bot asociado al token: @' + username)
+              with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+                  summary.write('Bot asociado al token: @' + username + '\n\n')
+          except Exception:
+              raise SystemExit('No se pudo identificar el bot.') from None
           chats = {}
           for update in data.get('result', []):
               message = update.get('message', {})
               chat = message.get('chat', {})
-              if chat.get('type') == 'private' and message.get('text', '').split('@')[0] == '/start':
+              if chat.get('type') == 'private' and message.get('text', '').strip().split('@')[0] == '/start':
                   chats[chat['id']] = True
           if len(chats) != 1:
-              raise SystemExit('Envía /start a TU bot y vuelve a ejecutar. Debe aparecer un único chat privado.')
+              raise SystemExit('Chats privados con /start encontrados: ' + str(len(chats)) + '. Comprueba el usuario del bot indicado arriba y envíale /start nuevamente.')
           chat_id = next(iter(chats))
           print('TELEGRAM_CHAT_ID = ' + str(chat_id))
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
