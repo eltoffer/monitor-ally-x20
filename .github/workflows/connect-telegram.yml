@@ -1,0 +1,41 @@
+name: Conectar Telegram
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  connect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Obtener identificador del chat
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+          token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+          if not token:
+              raise SystemExit('Falta guardar TELEGRAM_BOT_TOKEN en los secretos.')
+          try:
+              with urllib.request.urlopen(
+                  'https://api.telegram.org/bot' + token + '/getUpdates', timeout=30
+              ) as response:
+                  data = json.load(response)
+          except Exception:
+              raise SystemExit('No se pudo consultar Telegram. Comprueba el token guardado.') from None
+          chats = {}
+          for update in data.get('result', []):
+              message = update.get('message', {})
+              chat = message.get('chat', {})
+              if chat.get('type') == 'private' and message.get('text', '').split('@')[0] == '/start':
+                  chats[chat['id']] = True
+          if len(chats) != 1:
+              raise SystemExit('Envía /start a TU bot y vuelve a ejecutar. Debe aparecer un único chat privado.')
+          chat_id = next(iter(chats))
+          print('TELEGRAM_CHAT_ID = ' + str(chat_id))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('## Identificador de Telegram\n\nGuarda un secreto llamado TELEGRAM_CHAT_ID con este valor:\n\n' + str(chat_id) + '\n')
+          PY
