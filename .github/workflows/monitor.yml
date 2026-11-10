@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - run: python -m playwright install --with-deps chromium
+      - run: python -m playwright install --only-shell chromium
       - name: Restore previous state
         run: |
           git fetch origin monitor-state || true
