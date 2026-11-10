@@ -21,7 +21,7 @@ jobs:
               raise SystemExit('Falta guardar TELEGRAM_BOT_TOKEN en los secretos.')
           try:
               with urllib.request.urlopen(
-                  'https://api.telegram.org/bot' + token + '/getUpdates', timeout=30
+                  'https://api.telegram.org/bot' + token + '/getUpdates?allowed_updates=%5B%22message%22%5D&timeout=20', timeout=30
               ) as response:
                   data = json.load(response)
           except Exception:
@@ -35,6 +35,8 @@ jobs:
                   summary.write('Bot asociado al token: @' + username + '\n\n')
           except Exception:
               raise SystemExit('No se pudo identificar el bot.') from None
+          print('Actualizaciones recibidas: ' + str(len(data.get('result', []))))
+          print('Tipos recibidos: ' + str([list(u.keys()) for u in data.get('result', [])]))
           chats = {}
           for update in data.get('result', []):
               message = update.get('message', {})
