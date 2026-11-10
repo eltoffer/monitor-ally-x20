@@ -1,6 +1,6 @@
 # Monitor ROG Xbox Ally X20
 
-Base preparada para RC74XA-TW009W y código postal 52168. No está activada ni se ha validado todavía contra las cinco tiendas. No confirma envío al código postal: este se incluye en el aviso para comprobarlo al comprar.
+Base preparada para RC74XA-TW009W y código postal 52168. Configurada en el repositorio eltoffer/monitor-ally-x20; conexión de Telegram comprobada. Validación local: Amazon agotado y Coppel disponible por $26,999; Liverpool, ASUS y Palacio devuelven HTTP 403. La cobertura de esas tres tiendas sigue pendiente. No confirma envío al código postal: este se incluye en el aviso para comprobarlo al comprar.
 
 ## Activación
 
@@ -15,12 +15,12 @@ Los ejecutores estándar de GitHub Actions son gratuitos en repositorios públic
 
 ## Qué detecta
 
-Se examinan fichas de Liverpool y Amazon y se buscan enlaces al producto en ASUS, Coppel y Palacio de Hierro. Las URLs de búsqueda de Coppel y Palacio son candidatas pendientes de validación. Amazon también requiere confirmar que su ficha coincide. No se eluden CAPTCHA ni bloqueos.
+Se examinan fichas individuales verificadas de las cinco tiendas. Amazon tiene además una lectura específica de su caja de compra y su título principal. No se eluden CAPTCHA ni bloqueos.
 
-Solo datos estructurados de un Product coincidente con una oferta InStock, LimitedAvailability o PreOrder producen un aviso de posible disponibilidad. No se usa el botón “comprar” como única evidencia. Agotado requiere evidencia explícita; lo demás se marca desconocido. La búsqueda no garantiza descubrir todos los productos nuevos. El precio no incluye necesariamente envío. El vendedor y la cobertura postal se confirman manualmente.
+Los datos estructurados de un Product coincidente con una oferta InStock, LimitedAvailability o PreOrder producen un aviso de posible disponibilidad. Amazon también permite detectar stock por la caja de compra, con título coincidente y evidencia de disponibilidad. No se usa el botón “comprar” como única evidencia. Agotado requiere evidencia explícita; lo demás se marca desconocido. La búsqueda no garantiza descubrir todos los productos nuevos. El precio no incluye necesariamente envío. El vendedor y la cobertura postal se confirman manualmente.
 
 Los avisos se envían al cambiar el estado, incluida la primera detección de un problema. El estado se guarda en una rama dedicada `monitor-state`; no uses esa rama para otros archivos, se reemplaza en cada ejecución. Los errores de ejecución se consultan en Actions. Un estado unknown persistente no repite avisos. Si falla todo el flujo, Telegram no necesariamente recibe aviso.
 
 ## Estado de entrega
 
-Verificación de sintaxis y pruebas del clasificador realizadas localmente. Pendiente: credenciales, primera ejecución real, adaptar sitios que no expongan datos estructurados y comprobar entrega de Telegram. El monitor aún no está operativo.
+Sintaxis y seis pruebas verificadas, incluida la ficha real de Amazon para evitar confusión con recomendaciones. Primera ejecución real y entrega de Telegram comprobadas. Pendiente: completar cobertura de Liverpool, ASUS y Palacio, bloqueadas con HTTP 403. La prueba manual envía un resumen; las ejecuciones periódicas avisan de cambios.
