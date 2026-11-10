@@ -1,5 +1,6 @@
 """Conservative monitor: only matching Product/Offer structured data confirms stock."""
 import asyncio
+import sys
 import json
 import os
 import re
@@ -59,6 +60,9 @@ async def inspect(page, url):
     return {'status': status, 'price': price, 'reason': 'Datos del producto' if status != 'unknown' else 'Sin evidencia suficiente de inventario'}
 
 def notify(message):
+    if '--dry-run' in sys.argv:
+        print('AVISO SIMULADO: ' + message)
+        return
     token, chat = os.getenv('TELEGRAM_BOT_TOKEN'), os.getenv('TELEGRAM_CHAT_ID')
     if not token or not chat:
         raise RuntimeError('Faltan los secretos de Telegram')
@@ -75,6 +79,8 @@ def notify(message):
         raise RuntimeError('No se pudo entregar el aviso por Telegram') from None
 
 async def main():
+    if os.getenv('TELEGRAM_TEST') == '1':
+        notify('✅ Conexión de Telegram comprobada. Iniciando prueba de las cinco tiendas; la cobertura de inventario se informará por separado.')
     config = json.loads((ROOT / 'config.json').read_text())
     state_path = ROOT / 'state.json'
     previous = json.loads(state_path.read_text()) if state_path.exists() else {}
