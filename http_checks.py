@@ -135,6 +135,22 @@ def palacio_stock(data):
     return result(reason='Palacio: señales insuficientes o contradictorias')
 
 
+def asus_stock(data):
+    if str(data.get('Status')) != '200':
+        return result(reason='ASUS: el catálogo no confirmó una respuesta válida')
+    for item in data.get('Result', {}).get('ProductList', []):
+        if item.get('SalesModelName', '').strip().upper() != 'RC74XA-TW009W':
+            continue
+        stock = item.get('StockStatus')
+        price = item.get('SortPrice', '')
+        if stock == 'notify_me':
+            return result('out_of_stock', 'ASUS: catálogo oficial del modelo exacto en estado notify_me', price)
+        if stock == 'buy':
+            return result('available', 'ASUS: catálogo oficial del modelo exacto en estado buy', price)
+        return result(reason='ASUS: estado del catálogo no reconocido (' + str(stock) + ')')
+    return result(reason='ASUS: no se encontró el modelo exacto en el catálogo')
+
+
 def fetch(url):
     request = urllib.request.Request(url, headers=HEADERS)
     try:
@@ -156,7 +172,12 @@ def check(store):
     code, text, error = fetch(endpoint)
     answer = None
     if code == 200:
-        if store['name'] == 'Palacio de Hierro' and store.get('inventory_url'):
+        if store['name'] == 'ASUS' and store.get('inventory_url'):
+            try:
+                answer = asus_stock(json.loads(text))
+            except (ValueError, TypeError, AttributeError):
+                answer = result(reason='ASUS: respuesta del catálogo inválida')
+        elif store['name'] == 'Palacio de Hierro' and store.get('inventory_url'):
             try:
                 answer = palacio_stock(json.loads(text))
             except (ValueError, TypeError, AttributeError):

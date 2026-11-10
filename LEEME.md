@@ -6,7 +6,8 @@ Producto: RC74XA-TW009W. CP de referencia: 52168. Repositorio: https://github.co
 
 Cada 15 minutos aproximadamente, GitHub ejecuta consultas HTTP públicas en paralelo, sin abrir un navegador ni instalar paquetes. Solo se utiliza Python 3.12. Los avisos se envían al cambiar el estado y no se repiten mientras siga igual. Las ejecuciones manuales o cambios de código también envían un resumen de diagnóstico.
 
-- ASUS y Coppel: oferta estructurada de la ficha que coincide con el producto.
+- ASUS: consulta pública ShopFilterResult del catálogo oficial, enlazada en los datos de la web ASUS. Se selecciona SalesModelName RC74XA-TW009W exacto; notify_me indica falta de compra disponible y buy indica compra ofrecida.
+- Coppel: oferta estructurada de la ficha que coincide con el producto.
 - Amazon: título del producto y caja principal de compra. Se ignoran las recomendaciones.
 - Palacio de Hierro: consulta pública Product-Variation enlazada por la propia ficha. Se comprueban ID, modelo, disponibilidad y posibilidad de ordenar.
 - Liverpool: ficha exacta. Si devuelve 404, se consulta la búsqueda del modelo exacto para localizar una ficha nueva. Si la búsqueda responde que no existe, el estado es `unlisted`; esto no confirma que todas sus sucursales carezcan de inventario.
@@ -25,6 +26,6 @@ Para probar localmente sin enviar avisos: `python3 monitor.py --dry-run`. Para v
 
 ## Evidencia y límites
 
-Ocho pruebas automatizadas incluyen: accesorios y ediciones distintas, recomendaciones de Amazon con stock, botón de compra sin evidencia de disponibilidad, señales contradictorias de Palacio, bloqueos y fichas retiradas de Liverpool. Las pruebas reales locales del nuevo método verificaron las cinco consultas en unos segundos: Coppel disponible, Amazon/ASUS/Palacio agotados y Liverpool sin ficha ni resultados del modelo. Consultar el último informe en GitHub para el estado más reciente.
+Nueve pruebas automatizadas incluyen: accesorios y ediciones distintas, recomendaciones de Amazon con stock, botón de compra sin evidencia de disponibilidad, señales contradictorias de Palacio, bloqueos y fichas retiradas de Liverpool. Las pruebas reales locales del nuevo método verificaron las cinco consultas en unos segundos: Coppel disponible, Amazon/ASUS/Palacio agotados y Liverpool sin ficha ni resultados del modelo. Consultar el último informe en GitHub para el estado más reciente.
 
 Documentación: https://docs.python.org/3.12/library/urllib.request.html , https://schema.org/availability , https://core.telegram.org/bots/api , https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows .

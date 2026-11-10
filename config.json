@@ -14,7 +14,8 @@
     {
       "name": "ASUS",
       "url": "https://shop.asus.com/mx/rog/rog-xbox-ally-x20.html",
-      "kind": "product"
+      "kind": "product",
+      "inventory_url": "https://odinapi.asus.com/recent-data/apiv2/ShopAPI/ShopFilterResult?CategoryName=&PageIndex=1&PageSize=12&PriceMax=&PriceMin=&ProductLevel1Code=mobile-handhelds&ProductLevel2Code=&SeriesName=&Sort=Newsest&Spec=&SubSeriesName=&SubSpec=&SystemCode=asus&WebsiteCode=mx&siteID=www&sitelang="
     },
     {
       "name": "Coppel",

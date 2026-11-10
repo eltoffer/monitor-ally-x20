@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from http_checks import Document, amazon_stock, check, matches, palacio_stock, schema_stock
+from http_checks import Document, amazon_stock, asus_stock, check, matches, palacio_stock, schema_stock
 
 
 class StockTests(unittest.TestCase):
@@ -39,6 +39,18 @@ class StockTests(unittest.TestCase):
     def test_access_block_is_never_interpreted_as_sold_out(self):
         with patch('http_checks.fetch', return_value=(403, '', 'HTTP 403')):
             self.assertEqual(check({'name': 'ASUS', 'url': 'https://shop.asus.com/mx/rog/rog-xbox-ally-x20.html'})['status'], 'unknown')
+
+    def test_asus_uses_exact_model_and_only_known_catalog_states(self):
+        item = {'SalesModelName': 'RC74XA-TW009W', 'StockStatus': 'notify_me', 'SortPrice': '26999.000'}
+        data = {'Status': '200', 'Result': {'ProductList': [item]}}
+        self.assertEqual(asus_stock(data)['status'], 'out_of_stock')
+        item['StockStatus'] = 'buy'
+        self.assertEqual(asus_stock(data)['status'], 'available')
+        item['SalesModelName'] = 'RC74XA-TW001W'
+        self.assertEqual(asus_stock(data)['status'], 'unknown')
+        item['SalesModelName'] = 'RC74XA-TW009W'
+        item['StockStatus'] = 'unrecognized'
+        self.assertEqual(asus_stock(data)['status'], 'unknown')
 
     def test_html_template_not_interpreted_as_real_amazon_buy_box(self):
         html = '<span id="productTitle">ROG Xbox Ally X20</span><script type="text/template"><div id="availability">En stock</div><input id="add-to-cart-button"></script>'
