@@ -1,0 +1,57 @@
+[
+  {
+    "store": "Liverpool",
+    "url": "https://www.liverpool.com.mx/tienda/pdp/consola-port-til-rog-xbox-ally-x20-multiplataforma-1-tb-alone-rc74xa-tw009w/1210545022",
+    "checked_at": "2026-11-14T20:38:27.951726+00:00",
+    "status": "unlisted",
+    "reason": "Liverpool: ficha HTTP 404 y búsqueda del modelo sin resultados; inventario no confirmado",
+    "price": "",
+    "method": "http",
+    "http_status": 404,
+    "seconds": 1.7
+  },
+  {
+    "store": "Amazon",
+    "url": "https://www.amazon.com.mx/dp/B0HJ6N5D4X",
+    "checked_at": "2026-11-14T20:38:27.951746+00:00",
+    "status": "out_of_stock",
+    "reason": "Amazon: caja de compra del producto agotada",
+    "price": "",
+    "method": "http",
+    "http_status": 200,
+    "seconds": 1.66
+  },
+  {
+    "store": "ASUS",
+    "url": "https://shop.asus.com/mx/rog/rog-xbox-ally-x20.html",
+    "checked_at": "2026-11-14T20:38:27.951750+00:00",
+    "status": "out_of_stock",
+    "reason": "ASUS: catálogo oficial del modelo exacto en estado notify_me",
+    "price": "26999.000",
+    "method": "http",
+    "http_status": 200,
+    "seconds": 0.63
+  },
+  {
+    "store": "Coppel",
+    "url": "https://www.coppel.com/pdp/consola-portatil-asus-rog-xbox-ally-x20-1-tb-pm-2532043",
+    "checked_at": "2026-11-14T20:38:27.951753+00:00",
+    "status": "available",
+    "reason": "Oferta estructurada del producto exacto: InStock",
+    "price": "26999",
+    "method": "http",
+    "http_status": 200,
+    "seconds": 0.54
+  },
+  {
+    "store": "Palacio de Hierro",
+    "url": "https://www.elpalaciodehierro.com/asus-consola-rog-xbox-ally-x20-1-tb-45809220.html",
+    "checked_at": "2026-11-14T20:38:27.951755+00:00",
+    "status": "out_of_stock",
+    "reason": "Palacio: API del producto confirma OutOfStock y available=false",
+    "price": "26999.1",
+    "method": "http",
+    "http_status": 200,
+    "seconds": 0.91
+  }
+]
