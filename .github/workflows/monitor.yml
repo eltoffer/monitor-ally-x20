@@ -29,6 +29,8 @@ jobs:
           git fetch origin monitor-state || true
           git show origin/monitor-state:state.json > state.json.tmp && mv state.json.tmp state.json || rm -f state.json.tmp
       - name: Check stores and notify
+        id: monitor
+        continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_TEST: ${{ github.event_name != 'schedule' && '1' || '0' }}
@@ -49,5 +51,11 @@ jobs:
         if: always()
         with:
           name: report
-          path: report.json
+          path: |
+            report.json
+            delivery.json
           retention-days: 7
+
+      - name: Report pending delivery failure
+        if: steps.monitor.outcome == 'failure'
+        run: exit 1
